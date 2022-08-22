@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\core\Request;
+
 class HomeController
 {
     public static function index()
@@ -9,8 +11,10 @@ class HomeController
         return "HELLO";
     }
 
-    public static function contactPost()
+    public static function contactPost(Request $request)
     {
-        return "contact post";
+        return $request->getMethod();
+
+        return $request->getBody()['full_name'];
     }
 }
