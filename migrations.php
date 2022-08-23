@@ -22,11 +22,11 @@ function callLastDown($db)
     $migratedTables = $db->getAppliedMigrations();
     if (count($migratedTables) > 0) {
         $lastTableFile = $migratedTables[0];
-        $instance =  $db->createMigrationClassInstance($lastTableFile);
-        echo "Rolling back migration " . $lastTableFile . PHP_EOL;
+        $instance = $db->createMigrationClassInstance($lastTableFile);
+        echo "Rolling back migration ".$lastTableFile.PHP_EOL;
         $instance->down();
-        echo $lastTableFile . " rolled back" . PHP_EOL;
+        echo $lastTableFile." rolled back".PHP_EOL;
     } else {
-        echo "No migrated table found" . PHP_EOL;
+        echo "No migrated table found".PHP_EOL;
     }
 }

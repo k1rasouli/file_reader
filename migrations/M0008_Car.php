@@ -7,6 +7,7 @@ use app\core\Database;
 class M0008_Car extends Database
 {
     private $tableName = "car";
+
     public function up()
     {
         $this->tableActions(
@@ -32,12 +33,12 @@ class M0008_Car extends Database
                 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
                 'UNIQUE (license_plate)',
             ],
-            ",FOREIGN KEY (car_brand_id) REFERENCES car_brand(id)," .
-            " FOREIGN KEY (location_id) REFERENCES location(id)," .
-            " FOREIGN KEY (car_model_id) REFERENCES car_model(id)," .
-            " FOREIGN KEY (fuel_type_id) REFERENCES fuel_type(id)," .
-            " FOREIGN KEY (transmission_id) REFERENCES transmission(id)," .
-            " FOREIGN KEY (car_type_group_id) REFERENCES car_type_group(id)," .
+            ",FOREIGN KEY (car_brand_id) REFERENCES car_brand(id),".
+            " FOREIGN KEY (location_id) REFERENCES location(id),".
+            " FOREIGN KEY (car_model_id) REFERENCES car_model(id),".
+            " FOREIGN KEY (fuel_type_id) REFERENCES fuel_type(id),".
+            " FOREIGN KEY (transmission_id) REFERENCES transmission(id),".
+            " FOREIGN KEY (car_type_group_id) REFERENCES car_type_group(id),".
             " FOREIGN KEY (car_type_id) REFERENCES car_type(id)"
         );
     }

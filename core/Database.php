@@ -76,37 +76,80 @@ class Database
         $this->pdo->exec($sql);
     }
 
-    protected function executeStaments(string $table, $statementType, array $fields, array $values = [], string $orderBy = "id ASC")
-    {
+    public function executeStaments(
+        string $table,
+        $statementType,
+        array $fields,
+        array $values = [],
+        string $orderBy = "id ASC",
+    ) {
         $SQL = "";
-        switch ($statementType) {
+        $sqlValues = [];
+        switch (strtoupper($statementType)) {
             case "SELECT":
                 if (count($values) == 0) {
                     $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." ORDER BY ".$orderBy;
+                } else {
+                    $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." WHERE " . $this->prepareFileds($fields, true) ." ORDER BY ".$orderBy;
+                    $sqlValues = $this->prepareValues($values, false, $fields);
                 }
+                $statement = $this->pdo->prepare($SQL);
+
+                if(count($sqlValues) > 0) {
+                    foreach ($sqlValues as $key => $value) {
+                        $statement->execute($value);
+                    }
+                }
+                //$statement->execute();
                 break;
             case "INSERT":
-                $SQL = "INSERT INTO ".$table." ".$this->prepareFileds($fields)." VALUES ".$this->prepareValues(
-                        $values,
-                        false
-                    );
+                $SQL = "INSERT INTO ".$table." (".implode(',', $fields).
+                    ") VALUES (" .
+                    $this->prepareFiledsPlaceHolders($fields) . ")";
+                $sqlValues = $this->prepareValues($values, false, $fields);
+                $statement = $this->pdo->prepare($SQL);
+                foreach ($sqlValues as $key => $value) {
+                    $statement->execute($value);
+                }
+                break;
+            /*case "UPDATE":
+                break;
+            case "DELETE":
+                break;*/
+            default:
+                throw new Exception("Wrong db action");
                 break;
         }
-        $statement = $this->pdo->prepare($SQL);
-        (count($values) > 0) ? $statement->execute($values) : $statement->execute();
         return $statement;
     }
 
-    private function prepareValues(array $values, bool $prepare = true)
+    private function prepareValues(array $values, bool $prepare = true, $fileds = [])
     {
-        if($prepare)
+        if ($prepare) {
             return implode(",", array_map(fn($m) => "('$m')", $values));
-        return implode(",", array_map(fn($m) => "(?)", $values));
+        }
+        $result = [];
+        foreach ($values as $value) {
+            foreach ($fileds as $filed) {
+                $result[] = [':' . $filed => $value];
+            }
+        }
+        return $result;
+        //return array_map(fn($f, $v) => [":" . $f => $v], $fileds, $values);
     }
 
-    private function prepareFileds(array $fields)
+    private function prepareFileds(array $fields, bool $forUpdate = false)
     {
+        if ($forUpdate) {
+            return implode(",", array_map(fn($f) => "$f=:$f", $fields));
+        }
+
         return implode(",", array_map(fn($f) => "($f)", $fields));
+    }
+
+    private function prepareFiledsPlaceHolders(array $fields)
+    {
+        return implode(",", array_map(fn($f) => ":$f", $fields));
     }
 
     public function createMigrationClassInstance($migrationFileName)
@@ -114,6 +157,7 @@ class Database
         require_once __DIR__.'/../migrations/'.$migrationFileName;
         $migrationClassName = pathinfo($migrationFileName, PATHINFO_FILENAME);
         $migrationClassNameWithPath = "app\\migrations\\".$migrationClassName;
+
         return new  $migrationClassNameWithPath();
     }
 }

@@ -7,6 +7,7 @@ use app\core\Database;
 class M0003_Location extends Database
 {
     private $tableName = "location";
+
     public function up()
     {
         $this->tableActions(

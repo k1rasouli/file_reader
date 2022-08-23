@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\core\Request;
+use app\core\Validation;
 
 class HomeController
 {

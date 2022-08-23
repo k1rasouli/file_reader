@@ -7,6 +7,7 @@ use app\core\Database;
 class M0005_Transmission extends Database
 {
     private $tableName = "transmission";
+
     public function up()
     {
         $this->tableActions(

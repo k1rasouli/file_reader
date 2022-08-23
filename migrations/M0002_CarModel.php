@@ -7,6 +7,7 @@ use app\core\Database;
 class M0002_CarModel extends Database
 {
     private $tableName = "car_model";
+
     public function up()
     {
         $this->tableActions(

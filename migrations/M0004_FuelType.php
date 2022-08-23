@@ -7,6 +7,7 @@ use app\core\Database;
 class M0004_FuelType extends Database
 {
     private $tableName = "fuel_type";
+
     public function up()
     {
         $this->tableActions(
