@@ -8,8 +8,9 @@ class Transmission extends Model
 {
     public string $transmission;
     public array $rules = [
-        'transmission' => ['required']
+        'transmission' => ['required'],
     ];
+
     public function validate()
     {
     }

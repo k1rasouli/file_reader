@@ -25,6 +25,7 @@ class Car extends Model
         'inside_length' => ['required', 'unsignedBigInt'],
         'inside_width' => ['required', 'unsignedBigInt'],
     ];
+
     public function validate()
     {
     }

@@ -8,8 +8,9 @@ class CarTypeGroup extends Model
 {
     public string $car_type_group;
     public array $rules = [
-        'car_type_group' => ['required']
+        'car_type_group' => ['required'],
     ];
+
     public function validate()
     {
     }

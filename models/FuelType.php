@@ -8,7 +8,7 @@ class FuelType extends Model
 {
     public string $fuel_type;
     public array $rules = [
-        'fuel_type' => ['required']
+        'fuel_type' => ['required'],
     ];
 
     public function validate()

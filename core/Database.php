@@ -90,12 +90,15 @@ class Database
                 if (count($values) == 0) {
                     $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." ORDER BY ".$orderBy;
                 } else {
-                    $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." WHERE " . $this->prepareFileds($fields, true) ." ORDER BY ".$orderBy;
+                    $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." WHERE ".$this->prepareFileds(
+                            $fields,
+                            true
+                        )." ORDER BY ".$orderBy;
                     $sqlValues = $this->prepareValues($values, false, $fields);
                 }
                 $statement = $this->pdo->prepare($SQL);
 
-                if(count($sqlValues) > 0) {
+                if (count($sqlValues) > 0) {
                     foreach ($sqlValues as $key => $value) {
                         $statement->execute($value);
                     }
@@ -104,8 +107,8 @@ class Database
                 break;
             case "INSERT":
                 $SQL = "INSERT INTO ".$table." (".implode(',', $fields).
-                    ") VALUES (" .
-                    $this->prepareFiledsPlaceHolders($fields) . ")";
+                    ") VALUES (".
+                    $this->prepareFiledsPlaceHolders($fields).")";
                 $sqlValues = $this->prepareValues($values, false, $fields);
                 $statement = $this->pdo->prepare($SQL);
                 foreach ($sqlValues as $key => $value) {
@@ -120,6 +123,7 @@ class Database
                 throw new Exception("Wrong db action");
                 break;
         }
+
         return $statement;
     }
 
@@ -131,9 +135,10 @@ class Database
         $result = [];
         foreach ($values as $value) {
             foreach ($fileds as $filed) {
-                $result[] = [':' . $filed => $value];
+                $result[] = [':'.$filed => $value];
             }
         }
+
         return $result;
         //return array_map(fn($f, $v) => [":" . $f => $v], $fileds, $values);
     }

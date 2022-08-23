@@ -9,7 +9,7 @@ class Validation implements Validaton
 
     public static function required($value)
     {
-        return !is_null($value) && $value != "";
+        return ! is_null($value) && $value != "";
     }
 
     public static function unsignedBigInt($value)
@@ -24,12 +24,13 @@ class Validation implements Validaton
 
     public static function max(mixed $value, $max)
     {
-        if(is_string($max)) {
+        if (is_string($max)) {
             return match ($max) {
                 'currentYear' => $value <= date('Y'),
                 default => false,
             };
         }
+
         return $value <= $max;
     }
 
@@ -37,8 +38,10 @@ class Validation implements Validaton
     {
         $db = new Database();
         $statement = $db->executeStaments($table, 'SELECT', [$field], [$value]);
-        if(count($statement->fetchAll()) == 0)
+        if (count($statement->fetchAll()) == 0) {
             return true;
+        }
+
         return false;
     }
 }
