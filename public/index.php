@@ -16,5 +16,6 @@ $app->router->post('/cars', [CarsController::class, 'store']);
 $app->router->post('/cars/import', [CarsController::class, 'import']);
 
 $app->router->get('/car/report/by/brand', [CarRepostsController::class, 'brand']);
+$app->router->get('/car/report/by/year', [CarRepostsController::class, 'year']);
 
 $app->run();
