@@ -17,8 +17,13 @@ class CSV implements FilesInterface
         $titles = $content[0];
         for ($I = 1; $I <= count($content); ++$I) {
             for ($J = 0; $J <= count($titles); ++$J) {
-                if ( ! is_null($titles[$J])) {
-                    $result[$I - 1][$titles[$J]] = $content[$I][$J];
+                if (array_key_exists($J, $titles) && ! is_null($titles[$J])) {
+                    try {
+                        $result[$I - 1][$titles[$J]] = $content[$I][$J];
+                    }
+                    catch (\Exception $exception) {
+
+                    }
                 }
             }
         }

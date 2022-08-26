@@ -11,6 +11,8 @@ class Database
 
     public function __construct()
     {
+        $env = new DotEnv();
+        $env->load();
         $this->dsn = getenv('DB_DSN');
         $this->user = getenv('DB_USER');
         $this->password = getenv('DB_PASSWORD');

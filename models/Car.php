@@ -158,16 +158,19 @@ class Car extends Model
     {
         $statement = $this->getDB()->pdo->prepare($this->selectStartSQL);
         $statement->execute();
+
         return json_encode($statement->fetchAll(\PDO::FETCH_CLASS));
     }
 
     public function search($fields, $values)
     {
         $searchStatement = $this->getDB()->pdo->prepare(
-            $this->selectStartSQL . " WHERE " . $this->getDB()->prepareFileds($fields, true));
+            $this->selectStartSQL." WHERE ".$this->getDB()->prepareFileds($fields, true)
+        );
         foreach ($this->getDB()->prepareValues($values, false, $fields) as $preparedValue) {
             $searchStatement->execute($preparedValue);
         }
+
         return json_encode($searchStatement->fetchAll(\PDO::FETCH_CLASS));
     }
 }
