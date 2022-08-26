@@ -82,18 +82,32 @@ class Database
         array $fields,
         array $values = [],
         string $orderBy = "id ASC",
+        array $selectFields = [],
     ) {
         $SQL = "";
         $sqlValues = [];
         switch (strtoupper($statementType)) {
             case "SELECT":
                 if (count($values) == 0) {
-                    $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." ORDER BY ".$orderBy;
+                    if (count($selectFields) > 0) {
+                        $SQL = "SELECT ".$this->prepareFileds($selectFields)." FROM ".$table." ORDER BY ".$orderBy;
+                    } else {
+                        $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." ORDER BY ".$orderBy;
+                    }
                 } else {
-                    $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." WHERE ".$this->prepareFileds(
-                            $fields,
-                            true
-                        )." ORDER BY ".$orderBy;
+                    if (count($selectFields) > 0) {
+                        $SQL = "SELECT ".$this->prepareFileds(
+                                $selectFields
+                            )." FROM ".$table." WHERE ".$this->prepareFileds(
+                                $fields,
+                                true
+                            )." ORDER BY ".$orderBy;
+                    } else {
+                        $SQL = "SELECT ".$this->prepareFileds($fields)." FROM ".$table." WHERE ".$this->prepareFileds(
+                                $fields,
+                                true
+                            )." ORDER BY ".$orderBy;
+                    }
                     $sqlValues = $this->prepareValues($values, false, $fields);
                 }
                 $statement = $this->pdo->prepare($SQL);
@@ -103,7 +117,6 @@ class Database
                         $statement->execute($value);
                     }
                 }
-                //$statement->execute();
                 break;
             case "INSERT":
                 $SQL = "INSERT INTO ".$table." (".implode(',', $fields).
@@ -111,8 +124,17 @@ class Database
                     $this->prepareFiledsPlaceHolders($fields).")";
                 $sqlValues = $this->prepareValues($values, false, $fields);
                 $statement = $this->pdo->prepare($SQL);
-                foreach ($sqlValues as $key => $value) {
-                    $statement->execute($value);
+                if (count($fields) == 1) {
+                    foreach ($sqlValues as $key => $value) {
+                        $statement->execute($value);
+                    }
+                } else {
+                    foreach ($sqlValues as $sqlValueItem) {
+                        foreach ($sqlValueItem as $key => $sqlValue) {
+                            $statement->bindValue($key, $sqlValue);
+                        }
+                    }
+                    $statement->execute();
                 }
                 break;
             /*case "UPDATE":
@@ -127,23 +149,26 @@ class Database
         return $statement;
     }
 
-    private function prepareValues(array $values, bool $prepare = true, $fileds = [])
+    public function prepareValues(array $values, bool $prepare = true, $fileds = [])
     {
         if ($prepare) {
             return implode(",", array_map(fn($m) => "('$m')", $values));
         }
         $result = [];
-        foreach ($values as $value) {
-            foreach ($fileds as $filed) {
-                $result[] = [':'.$filed => $value];
+        if (count($values) != count($fileds)) {
+            foreach ($values as $value) {
+                foreach ($fileds as $filed) {
+                    $result[] = [':'.$filed => $value];
+                }
             }
+        } else {
+            $result = array_map(fn($f, $v) => [":".$f => $v], $fileds, $values);
         }
 
         return $result;
-        //return array_map(fn($f, $v) => [":" . $f => $v], $fileds, $values);
     }
 
-    private function prepareFileds(array $fields, bool $forUpdate = false)
+    public function prepareFileds(array $fields, bool $forUpdate = false)
     {
         if ($forUpdate) {
             return implode(",", array_map(fn($f) => "$f=:$f", $fields));
@@ -164,5 +189,19 @@ class Database
         $migrationClassNameWithPath = "app\\migrations\\".$migrationClassName;
 
         return new  $migrationClassNameWithPath();
+    }
+
+    public function tableFields($tableName)
+    {
+        $statement = $this->pdo->prepare("DESCRIBE ".$tableName);
+        $statement->execute();
+
+        return $statement->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    public function truncateTable($tableName)
+    {
+        $statement = $this->pdo->prepare("TRUNCATE ".$tableName);
+        $statement->execute();
     }
 }

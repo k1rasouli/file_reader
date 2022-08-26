@@ -6,6 +6,8 @@ interface Validaton
 {
     public static function required($value);
 
+    public static function unsignedInt($value);
+
     public static function unsignedBigInt($value);
 
     public static function min($value, $min);

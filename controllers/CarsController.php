@@ -3,33 +3,58 @@
 namespace app\controllers;
 
 use app\core\Request;
-use app\libs\Files;
+use app\libs\Files\Files;
 use app\models\Car;
 
 class CarsController
 {
-    public static function index()
+    public static function import()
     {
-        return "SHOW ALL CARS INFORMATION";
+        $objFile = new Files();
+        $objCar = new Car();
+
+        $objCar->getDB()->truncateTable('car');
+        $contentsArray = $objFile->fileContent();
+        foreach ($contentsArray as $contents) {
+            foreach ($contents as $content) {
+                $objCar->save($content);
+            }
+        }
+
+        return json_encode(['message' => 'All Data Imported Successfully']);
     }
 
-    public static function store()
+    public static function index()
     {
-        /*$json = file_get_contents(__DIR__ . '/../public/files/source-2.json');
-        $json_data = json_decode($json,true);
-        return var_dump($json_data);*/
-        /*if (($open = fopen(__DIR__ . "/../public/files/source-1.csv", "r")) !== FALSE)
+        $objCar = new Car();
+
+        return $objCar->all();
+    }
+
+    public static function store(Request $request)
+    {
+        $objCar = new Car();
+
+        return $objCar->save($request->getBody());
+        /*
         {
-            while (($data = fgetcsv($open, 1000, ",")) !== FALSE)
-            {
-                $array[] = $data;
-            }
-            fclose($open);
-            return var_dump($array);
-        }*/
-        /*return var_dump(array_diff(scandir(__DIR__ . "/../public/files"), ['.', '..']));*/
-        $uploadedFile = new Files();
-        return var_dump($uploadedFile->filesArray);
+            "Car Brand": "Kia",
+            "Car Model": "Pride",
+            "Car year": "2022",
+            "Location": "Iran",
+            "License plate": "IR 75 Z 222",
+            "Car km": "10",
+            "Number of doors": "4",
+            "Number of seats": "4",
+            "Fuel type": "Petrol",
+            "Transmission": "Manual",
+            "Car Type Group": "Car",
+            "Car Type": "Small car",
+            "Inside height": "5.22",
+            "Inside length": "1.44",
+            "Inside width": "2.50"
+        }
+     */
     }
 
     public function show(Car $car)

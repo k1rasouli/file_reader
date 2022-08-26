@@ -17,6 +17,11 @@ class Validation implements Validaton
         return $value >= 0 && $value <= 9223372036854775807;
     }
 
+    public static function unsignedInt($value)
+    {
+        return $value >= 0 && $value <= 2147483647;
+    }
+
     public static function min($value, $min)
     {
         return $value >= $min;
