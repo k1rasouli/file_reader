@@ -20,9 +20,7 @@ class CSV implements FilesInterface
                 if (array_key_exists($J, $titles) && ! is_null($titles[$J])) {
                     try {
                         $result[$I - 1][$titles[$J]] = $content[$I][$J];
-                    }
-                    catch (\Exception $exception) {
-
+                    } catch (\Exception $exception) {
                     }
                 }
             }

@@ -28,7 +28,7 @@ class CarsTest extends TestCase
         $contentsArray = $objFile->fileContent();
         $cars = array();
         $importedCars = json_decode($objCar->all());
-        for($I = 0; $I < count($contentsArray); ++$I) {
+        for ($I = 0; $I < count($contentsArray); ++$I) {
             foreach ($contentsArray[$I] as $contentCar) {
                 $cars [] = $contentCar;
             }
@@ -62,7 +62,7 @@ class CarsTest extends TestCase
             "Car Type" => "Small car",
             "Inside height" => "5.22",
             "Inside length" => "1.44",
-            "Inside width" => "2.50"
+            "Inside width" => "2.50",
         ]);
         $afterInsertCount = count(json_decode($objCar->all()));
         $this->assertEquals($beforeInsertCount + 1, $afterInsertCount);
